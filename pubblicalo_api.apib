@@ -1,0 +1,105 @@
+FORMAT: 1A
+HOST: http://lab.lispa.it/api
+
+# Pubblica.LO
+
+Esposizione del bilancio pubblico enti regionali lombardi
+
+## Seleziona conti [/accounts]
+
+### Elenca conti selezionati  [GET]
+
++ Attributes
+    + "mandante" (number, optional) - Società mandante
+        + Default: '130'
+    + "societa"  (number, optional) - Società del mandante
+        + Default: '1000'
+    + "anno" (number, optional) - Snno di bilancio
+        + Default: 'anno corrente'
+    + "tipo_conto" (enum[string], optional) - Tipo del conto
+        + Members:
+            + 'U'
+            + 'E'
+    + "livello" (enum[number], optional) - Livello del conto
+        + Members:
+            + 1
+            + 2
+            + 3
+            + 4
+            + 5
+    + "conto" (string, optional) - Conto del piano dei conti, se parziale elenza tutta la struttura sottostante,
+                                   se tutto a 0 fornisce il totale: E.0.00.00.00.000 = totale entrate, U.0.00.00.00.000 = totale uscite
+    + "voce" (string, optional) - Filtra le parole della descrizione del conto
+    + "ricerca" (string, optional) - Filtra le parole della descrizione del conto e di tutti i suoi livelli superiori
+    + "sort_column" (enum[string], optional) - Ordine dei risultati per attributo
+        + Members:
+            + 'conto'
+            + 'tipo_conto'
+            + 'anno'
+            + 'importo'
+    + "sort_order" (enum[string], optional) - Ordine dei risultati ascendente o discendente
+        + Members:
+            + 'ASC'
+            + 'DESC'
+        + Default: 'ASC'
+    + "page" (number, optional) - Numero della pagina da restituire
+        + Default: '1'
+    + "per_page" (number, optional) - Numero di elementi per pagina da restituire
+        + Default: '20'
+
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 336,
+                "mandante": 130,
+                "societa": 1000,
+                "anno": 2015,
+                "tipo_conto": "U",
+                "livello": 1,
+                "conto": "U.1.00.00.00.000",
+                "voce": "Spese correnti",
+                "importo": "68148499.88",
+                "importo_01": "14469542.6",
+                "importo_02": "4211656.41",
+                "importo_03": "4684551.37",
+                "importo_04": "4211808.3",
+                "importo_05": "4130714.31",
+                "importo_06": "5104461.48",
+                "importo_07": "3771947.69",
+                "importo_08": "4308235.19",
+                "importo_09": "3520682.02",
+                "importo_10": "3403352.32",
+                "importo_11": "6720720.06",
+                "importo_12": "9610828.13",
+                "importo_q1": "23365750.38",
+                "importo_q2": "13446984.09",
+                "importo_q3": "11600864.9",
+                "importo_q4": "19734900.51",
+                "ricerca": "spese correnti",
+                "created_at": "2016-03-03T12:13:54.000Z",
+                "updated_at": "2016-03-03T12:13:54.000Z",
+                "mandante_prec": 130,
+                "societa_prec": 1000,
+                "anno_prec": 2014,
+                "conto_prec": "U.1.00.00.00.000",
+                "importo_prec": "23373689.0",
+                "importo_01_prec": "1389277.27",
+                "importo_02_prec": "1622442.28",
+                "importo_03_prec": "1912708.67",
+                "importo_04_prec": "1646111.77",
+                "importo_05_prec": "1850805.18",
+                "importo_06_prec": "2190642.91",
+                "importo_07_prec": "2140745.89",
+                "importo_08_prec": "1909757.04",
+                "importo_09_prec": "1499209.08",
+                "importo_10_prec": "2002508.21",
+                "importo_11_prec": "1794804.55",
+                "importo_12_prec": "3414676.15",
+                "importo_q1_prec": "4924428.22",
+                "importo_q2_prec": "5687559.86",
+                "importo_q3_prec": "5549712.01",
+                "importo_q4_prec": "7211988.91"
+            }
+        ]
