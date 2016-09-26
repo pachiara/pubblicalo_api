@@ -16,7 +16,7 @@ namespace :etl do
   task :dati => :environment do
     puts "Carico dati per conto di 5 livello e data del movimento totalizzati per mese di environment #{Rails.env}"
 
-    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo-api_development")
+    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
     # livello di rottura per mandante, societa, anno, conto
     livello_rottura = ""
 
@@ -59,7 +59,7 @@ namespace :etl do
   task :livelli => :environment do
     puts "Calcolo e carico dati per conto per livelli superiori di environment #{Rails.env}"
 
-    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo-api_development")
+    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
     anno = nil
 
     # calcolo il livello 4 sommando il livello 5
@@ -158,7 +158,7 @@ namespace :etl do
   task :ricerca => :environment do
     puts "Riporta la descrizione dei conti dei livelli superiori nel campo di ricerca di quelli inferiori (in minuscolo) di environment #{Rails.env}"
 
-    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo-api_development")
+    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
 
     client.query("select financial_plans.id, financial_plans.anno, financial_plans.livello, financial_plans.conto, piano_finanziario_2016.conto as conto_sup,  piano_finanziario_2016.voce, financial_plans.ricerca, financial_plans.voce as voce_old from financial_plans join piano_finanziario_2016 on concat(substr(financial_plans.conto, 1, 4), '00.00.00.000') = piano_finanziario_2016.conto and financial_plans.livello > 1").each do |row|
       conto = FinancialPlan.find(row["id"])
