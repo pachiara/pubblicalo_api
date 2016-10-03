@@ -1,4 +1,4 @@
-class FinancialPlan < ActiveRecord::Base
+class FinancialPlan < ApplicationRecord
 
   #Metodi di classe
   class << self
