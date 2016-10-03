@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Code:</strong>
+  <%= @population.code %>
+</p>
+
+<p>
+  <strong>Region:</strong>
+  <%= @population.region %>
+</p>
+
+<p>
+  <strong>Year:</strong>
+  <%= @population.year %>
+</p>
+
+<p>
+  <strong>People:</strong>
+  <%= @population.people %>
+</p>
+
+<%= link_to 'Edit', edit_population_path(@population) %> |
+<%= link_to 'Back', populations_path %>

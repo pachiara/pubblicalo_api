@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
-  scope '/api' do
+  resources :populations
+  scope '/api', defaults: {format: 'json'} do
     scope '/v1' do
       scope '/all' do
         get '/' => 'financial_plans#v1_all'
@@ -10,6 +11,9 @@ Rails.application.routes.draw do
       end
       scope '/accounts_simple' do
         get '/' => 'financial_plans#v1_simple_find'
+      end
+      scope '/people' do
+        get '/' => 'populations#v1_find'
       end
     end
     scope '/v2' do
