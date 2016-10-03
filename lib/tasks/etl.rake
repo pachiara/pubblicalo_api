@@ -1,5 +1,7 @@
 namespace :etl do
   require 'mysql2'
+  require 'csv'
+
   class << self
     def tratta_livello(livello)
       case livello
@@ -12,11 +14,30 @@ namespace :etl do
     end
   end
 
-  desc "carico dati estratti al 5 livello per conto e data movimento"
+  desc "1) accodo nello stage i dati estratti al 5 livello per conto e data movimento in formato csv su mysql2"
+  task :csv_import => :environment do
+    puts "Accodo dati in formato csv per conto di 5 livello e data del movimento di environment #{Rails.env}"
+
+    root   = File.expand_path("../../../", __FILE__)
+    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
+
+    CSV.foreach("#{root}/db/reversali_mandati_130_2016.csv", :headers => true) do |row|
+      client.query("insert into etl_mandati_reversali (mandante, societa, conto, importo, data) VALUES
+      (#{row['mandante']}, #{row['societa']}, '#{row['conto']}', #{row['importo']}, '#{row['data']}')")
+    end
+
+    client.close
+  end
+
+  desc "2) carico dati estratti al 5 livello per conto e data movimento"
   task :dati => :environment do
     puts "Carico dati per conto di 5 livello e data del movimento totalizzati per mese di environment #{Rails.env}"
 
     client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
+
+    # svuota il database
+    FinancialPlan.destroy_all
+
     # livello di rottura per mandante, societa, anno, conto
     livello_rottura = ""
 
@@ -55,7 +76,7 @@ namespace :etl do
     client.close
   end
 
-  desc "calcola dati per livelli superiori"
+  desc "3) calcola dati per livelli superiori"
   task :livelli => :environment do
     puts "Calcolo e carico dati per conto per livelli superiori di environment #{Rails.env}"
 
@@ -154,7 +175,7 @@ namespace :etl do
     client.close
   end
 
-  desc "riporta campo ricerca su tutti i livelli"
+  desc "4) riporta campo ricerca su tutti i livelli"
   task :ricerca => :environment do
     puts "Riporta la descrizione dei conti dei livelli superiori nel campo di ricerca di quelli inferiori (in minuscolo) di environment #{Rails.env}"
 
