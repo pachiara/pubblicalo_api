@@ -21,7 +21,7 @@ namespace :etl do
     root   = File.expand_path("../../../", __FILE__)
     client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
 
-    CSV.foreach("#{root}/db/reversali_mandati_130_2016.csv", :headers => true) do |row|
+    CSV.foreach("#{root}/db/reversali_mandati_130_2016_2017.csv", :headers => true) do |row|
       client.query("insert into etl_mandati_reversali (mandante, societa, conto, importo, data) VALUES
       (#{row['mandante']}, #{row['societa']}, '#{row['conto']}', #{row['importo']}, '#{row['data']}')")
     end
