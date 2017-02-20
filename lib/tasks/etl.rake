@@ -20,8 +20,13 @@ namespace :etl do
 
     root   = File.expand_path("../../../", __FILE__)
     client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
+    societa = 130
+    time = Time.new
+    data = data = time.year.to_s + '.' + time.month.to_s + '.' + time.day.to_s
+    #data = "2017.2.17"  #per elaborare una data precisa
+    puts "Elaboro il file: #{root}/etl/reversali_mandati_#{societa}_#{data}.csv"
 
-    CSV.foreach("#{root}/db/reversali_mandati_130_2016_2017.csv", :headers => true) do |row|
+    CSV.foreach("#{root}/etl/reversali_mandati_#{societa}_#{data}.csv", :headers => true) do |row|
       client.query("insert into etl_mandati_reversali (mandante, societa, conto, importo, data) VALUES
       (#{row['mandante']}, #{row['societa']}, '#{row['conto']}', #{row['importo']}, '#{row['data']}')")
     end
