@@ -24,9 +24,9 @@ namespace :etl do
     time = Time.new
     data = data = time.year.to_s + '.' + time.month.to_s + '.' + time.day.to_s
     #data = "2017.2.17"  #per elaborare una data precisa
-    puts "Elaboro il file: #{root}/etl/reversali_mandati_#{societa}_#{data}.csv"
+    puts "Elaboro il file: #{root}../etl/reversali_mandati_#{societa}_#{data}.csv"
 
-    CSV.foreach("#{root}/etl/reversali_mandati_#{societa}_#{data}.csv", :headers => true) do |row|
+    CSV.foreach("#{root}../etl/reversali_mandati_#{societa}_#{data}.csv", :headers => true) do |row|
       client.query("insert into etl_mandati_reversali (mandante, societa, conto, importo, data) VALUES
       (#{row['mandante']}, #{row['societa']}, '#{row['conto']}', #{row['importo']}, '#{row['data']}')")
     end
