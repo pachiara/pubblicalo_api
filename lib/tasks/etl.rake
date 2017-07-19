@@ -1,6 +1,7 @@
 namespace :etl do
   require 'mysql2'
   require 'csv'
+  require 'date'
 
   class << self
     def tratta_livello(livello)
@@ -15,18 +16,19 @@ namespace :etl do
   end
 
   desc "1) accodo nello stage i dati estratti al 5 livello per conto e data movimento in formato csv su mysql2"
-  task :csv_import => :environment do
+  task :csv_import, [:giorno] => :environment do |t, args|
+#  task :csv_import => :environment do
     puts "Accodo dati in formato csv per conto di 5 livello e data del movimento di environment #{Rails.env}"
 
     root   = File.expand_path("../../../", __FILE__)
-    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
+    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api")
     societa = 130
-    time = Time.new
-    data = data = time.year.to_s + '.' + time.month.to_s + '.' + time.day.to_s
-    #data = "2017.2.17"  #per elaborare una data precisa
-    puts "Elaboro il file: #{root}../etl/reversali_mandati_#{societa}_#{data}.csv"
+    data = DateTime.strptime("#{args[:giorno]}", '%d/%m/%Y').strftime('%Y.%m.%d')
+#    data = DateTime.now.strftime('%Y.%m.%d')
+#    data = "2017.07.14"  #per elaborare una data precisa
+     puts "Elaboro il file: #{root}/../etl/reversali_mandati_#{societa}_#{data}.csv"
 
-    CSV.foreach("#{root}../etl/reversali_mandati_#{societa}_#{data}.csv", :headers => true) do |row|
+    CSV.foreach("#{root}/../etl/reversali_mandati_#{societa}_#{data}.csv", :headers => true) do |row|
       client.query("insert into etl_mandati_reversali (mandante, societa, conto, importo, data) VALUES
       (#{row['mandante']}, #{row['societa']}, '#{row['conto']}', #{row['importo']}, '#{row['data']}')")
     end
@@ -38,7 +40,7 @@ namespace :etl do
   task :dati => :environment do
     puts "Carico dati per conto di 5 livello e data del movimento totalizzati per mese di environment #{Rails.env}"
 
-    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
+    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api")
 
     # svuota il database
     FinancialPlan.destroy_all
@@ -85,7 +87,7 @@ namespace :etl do
   task :livelli => :environment do
     puts "Calcolo e carico dati per conto per livelli superiori di environment #{Rails.env}"
 
-    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
+    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api")
     anno = nil
 
     # calcolo il livello 4 sommando il livello 5
@@ -184,7 +186,7 @@ namespace :etl do
   task :ricerca => :environment do
     puts "Riporta la descrizione dei conti dei livelli superiori nel campo di ricerca di quelli inferiori (in minuscolo) di environment #{Rails.env}"
 
-    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api_development")
+    client = Mysql2::Client.new(:host => "localhost", :username => "root", :database => "pubblicalo_api")
 
     client.query("select financial_plans.id, financial_plans.anno, financial_plans.livello, financial_plans.conto, piano_finanziario_2016.conto as conto_sup,  piano_finanziario_2016.voce, financial_plans.ricerca, financial_plans.voce as voce_old from financial_plans join piano_finanziario_2016 on concat(substr(financial_plans.conto, 1, 4), '00.00.00.000') = piano_finanziario_2016.conto and financial_plans.livello > 1").each do |row|
       conto = FinancialPlan.find(row["id"])
@@ -203,6 +205,14 @@ namespace :etl do
       conto.update(ricerca: row["ricerca"] << " " << row["voce"].downcase)
     end
     client.close
+  end
+
+  desc "5) richiama in cascata tutti gli aggiornamenti rake etl:daily_update["18/07/2017"]"
+  task :daily_update, [:giorno] do |t, args|
+    Rake::Task["etl:csv_import"].invoke("#{args[:giorno]}")
+    Rake::Task["etl:dati"].invoke
+    Rake::Task["etl:livelli"].invoke
+    Rake::Task["etl:ricerca"].invoke
   end
 
 end
