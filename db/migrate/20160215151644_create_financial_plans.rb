@@ -1,7 +1,7 @@
-class CreateFinancialPlans < ActiveRecord::Migration
+class CreateFinancialPlans < ActiveRecord::Migration[5.1]
   def change
     create_table :financial_plans do |t|
-      
+
       t.integer    :mandante,       limit: 3
       t.integer    :societa,        limit: 4
       t.integer    :anno,           limit: 4

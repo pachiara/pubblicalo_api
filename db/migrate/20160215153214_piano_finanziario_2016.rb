@@ -1,4 +1,4 @@
-class PianoFinanziario2016 < ActiveRecord::Migration
+class PianoFinanziario2016 < ActiveRecord::Migration[5.1]
   def change
     create_table "piano_finanziario_2016", force: :cascade do |t|
       t.string "conto",      limit: 16

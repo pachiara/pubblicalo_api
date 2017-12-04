@@ -1,4 +1,4 @@
-class CreatePopulations < ActiveRecord::Migration[5.0]
+class CreatePopulations < ActiveRecord::Migration[5.1]
   def change
     create_table :populations do |t|
       t.string     :code,    limit: 2

@@ -1,4 +1,4 @@
-class EtlMandantiReversali < ActiveRecord::Migration
+class EtlMandantiReversali < ActiveRecord::Migration[5.1]
   def change
     create_table "etl_mandati_reversali" force: :cascade do |t|
       t.integer  "mandante",   limit: 3
